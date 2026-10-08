@@ -1,1 +1,1 @@
-
+const crypto=require('crypto');function sign(v){return crypto.createHmac('sha256',process.env.ADMIN_SECRET).update(v).digest('hex')}module.exports=(req,res)=>{const m=(req.headers.cookie||'').match(/(?:^|;\s*)playbox_admin=([^;]+)/);if(!m)return res.status(401).json({error:'Unauthorized'});const [u,s]=decodeURIComponent(m[1]).split('.');return s===sign(u)?res.status(200).json({ok:true}):res.status(401).json({error:'Unauthorized'})};
