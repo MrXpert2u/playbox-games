@@ -28,7 +28,7 @@ button{cursor:pointer}
 
 /* Header (not sticky) */
 .header{background:var(--surface);border-radius:0 0 22px 22px;box-shadow:var(--shadow);margin:0 12px}
-.header-top{display:flex;align-items:center;gap:16px;padding:12px 18px;max-width:1280px;margin:auto}
+.header-top{display:flex;align-items:center;gap:16px;padding:12px 18px;max-width:1280px;margin:auto;position:relative}
 .logo{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.7rem;color:var(--ink);text-decoration:none;letter-spacing:-.5px;user-select:none}
 .logo span{background:var(--sun);color:#14304A;padding:0 8px;border-radius:10px;margin-left:2px}
 .search{flex:1;max-width:520px;margin:0 auto;padding:10px 18px;border:2px solid transparent;border-radius:999px;background:var(--field);outline:none;width:100%}
@@ -39,11 +39,29 @@ button{cursor:pointer}
 .i-sun{display:none}
 [data-theme="dark"] .i-sun{display:block}
 [data-theme="dark"] .i-moon{display:none}
-.cats{display:flex;gap:8px;overflow-x:auto;padding:0 18px 12px;max-width:1280px;margin:auto;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.chip{flex:none;border:0;background:var(--field);padding:6px 16px;border-radius:999px;font-weight:700;font-size:.9rem}
-.chip:hover{background:var(--line)}
-.chip.on{background:var(--accent);color:#fff}
+.nav-cats{display:flex!important;align-items:center;gap:8px;padding:0 18px 12px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;min-height:42px;visibility:visible!important;opacity:1!important}
+.nav-cats::-webkit-scrollbar{display:none}
+.nav-cats button{display:flex!important;align-items:center;gap:4px;flex:none;border:0;background:var(--field);color:var(--ink);padding:8px 14px;border-radius:999px;font-weight:750;font-size:.86rem;white-space:nowrap;cursor:pointer;transition:background-color .25s ease,color .25s ease,transform .2s ease;visibility:visible!important}
+.nav-cats button:hover{background:var(--line);transform:translateY(-1px)}
+.nav-cats button.on{background:var(--accent);color:#fff}
+.nav-cats .count{font-size:.68rem;opacity:.7;margin-left:5px}
+
+
+/* Subtle page transitions */
+body{transition:background-color .35s ease,color .35s ease}
+.header,.tile,.player,.player-bar,.icon-btn,.search,.chip,.btn{transition:background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease,transform .2s ease}
+.fade-swap{animation:fadeSwap .32s ease both}
+@keyframes fadeSwap{from{opacity:.15;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.search-wrap{position:relative;flex:1;max-width:520px;margin:0 auto;min-width:0}
+.search-wrap .search{margin:0;max-width:none}
+.search-suggest{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:80;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 35px rgba(0,0,0,.22);padding:6px;overflow:hidden;display:none}
+.search-suggest.show{display:block;animation:fadeSwap .18s ease both}
+.search-suggest button{width:100%;border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:11px;font-weight:700;display:flex;align-items:center;gap:10px}
+.search-suggest button:hover,.search-suggest button.active{background:var(--field)}
+.search-suggest .mini-cover{width:36px;height:36px;border-radius:8px;object-fit:cover;background:var(--line);flex:none}
+.search-suggest small{display:block;color:var(--muted);font-weight:600;font-size:.72rem;margin-top:1px}
+.menu-btn{width:42px;height:42px;border:0;border-radius:50%;background:var(--field);display:grid;place-items:center;flex:none}
+.menu-btn:hover{background:var(--line)}
 
 /* Buttons */
 .btn{border:2px solid var(--line);border-radius:999px;padding:8px 18px;font-weight:700;background:var(--surface)}
@@ -67,13 +85,13 @@ button{cursor:pointer}
 .s3{grid-column:span 3;grid-row:span 3}
 .cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .cover.ph{display:grid;place-items:center;font-family:'Fredoka',sans-serif;font-size:2.4rem;font-weight:700;color:#fff}
-.tile-info{position:absolute;inset:auto 0 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:34px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff;opacity:0;transition:opacity .15s}
+.tile-info{position:absolute;inset:auto 0 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:38px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.82));color:#fff;opacity:0;transition:opacity .15s}
 .tile:hover .tile-info,.tile:focus-visible .tile-info{opacity:1}
 .tile-info .tc{display:none}
-.tn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:.95rem;line-height:1.2;overflow-wrap:anywhere}
-.s3 .tn{font-size:1.4rem}
+.tn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:.78rem;line-height:1.12;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%}
+.s3 .tn{font-size:1.12rem}
 .tc{font-size:.72rem;font-weight:700;background:var(--sun);color:#14304A;border-radius:999px;padding:0 8px}
-.tp{margin-top:3px;font-size:.78rem;font-weight:700;background:var(--mint);border-radius:999px;padding:1px 14px}
+.tp{display:none!important}
 .badge{position:absolute;top:6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .badge svg{width:15px;height:15px}
 .badge.hot{right:6px;background:var(--coral);color:#fff}
@@ -81,21 +99,21 @@ button{cursor:pointer}
 @media (hover:none){
   .tile-info{opacity:1;padding-top:22px}
   .s1 .tc,.s1 .tp{display:none}
-  .s1 .tn{font-size:.62rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .s1 .tn{font-size:.66rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 }
 
 /* Inline player */
 .player{position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#000;box-shadow:var(--shadow);min-width:0}
 .player iframe{flex:1;min-height:0;width:100%;border:0;background:#000}
 /* Gameplay layout: keep the original Playbox look, only split the player and recommendations. */
-body.playing .grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(220px,1fr);grid-auto-rows:auto;align-items:start;gap:16px;width:100%;}
+body.playing .grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(280px,1fr);grid-auto-rows:auto;align-items:start;gap:16px;width:100%;}
 body.playing .player{grid-column:1;grid-row:1 / span 2;width:100%;aspect-ratio:16/9;min-height:520px;}
-.recommendations{grid-column:2;grid-row:1;display:grid;grid-template-columns:1fr;gap:12px;align-content:start;}
-.recommendations-title{font-family:'Fredoka',sans-serif;font-size:1.15rem;margin-bottom:2px;}
-.recommendations .tile{width:100%;aspect-ratio:1/1;transform:none!important;}
+.recommendations{grid-column:2;grid-row:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start;}
+.recommendations-title{grid-column:1/-1;font-family:'Fredoka',sans-serif;font-size:1.15rem;margin-bottom:1px;}
+.recommendations .tile{width:100%;aspect-ratio:1/1;transform:none!important;min-width:0}.recommendations .tn{font-size:.72rem}.recommendations .tile-info{padding:34px 8px 8px}
 .recommendations .tile-info{opacity:0;}
 body.playing .recommendations .tile .tc{display:none;}
-body.playing .recommendations .tile .tp{display:inline-flex;}
+body.playing .recommendations .tile .tp{display:none!important;}
 @media(max-width:900px){body.playing .grid{grid-template-columns:1fr;}body.playing .player{grid-column:1;grid-row:1;min-height:360px}.recommendations{grid-column:1;grid-row:2;grid-template-columns:repeat(2,minmax(0,1fr));}.recommendations .tile{aspect-ratio:1/1;}}
 
 .player-bar{order:2;height:64px;flex:none;display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--surface);color:var(--ink)}
@@ -118,11 +136,6 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
 .row{display:flex;gap:10px;justify-content:flex-end;align-items:center}
 .error{color:#B3203A;background:#FFE3E8;border-radius:10px;padding:8px 12px;font-size:.9rem;font-weight:600}
 
-  .side{width:auto;flex-direction:row;align-items:center;gap:10px;padding:10px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
-  .side-brand{display:none}
-  .side-nav{flex-direction:row}
-  .side-nav button{white-space:nowrap;padding:8px 12px}
-  .side-foot{margin:0 0 0 auto;flex-direction:row}
   .content{padding:0 14px 50px}
   .form-grid{grid-template-columns:1fr}
   .list li{flex-wrap:wrap}
@@ -134,7 +147,7 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
   .header-top{flex-wrap:wrap;padding:10px 12px;gap:10px}
   .search{order:3;flex-basis:100%;max-width:none}
   .tools{margin-left:auto}
-  .cats{padding:0 12px 10px}
+  .nav-cats{padding:0 12px 10px}
   .main{padding:18px 10px 50px}
   .s3 .tn{font-size:1.1rem}
   .player-bar{padding:0 10px;gap:8px}
@@ -163,12 +176,13 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
 <div class="bgblur" id="bgblur" aria-hidden="true"></div>
 <header class="header"><div class="header-top">
 <a href="#" class="logo" id="logo">play<span>box</span></a>
-<input type="search" id="search" class="search" placeholder="Search games" aria-label="Search games" autocomplete="off">
+<div class="search-wrap"><input type="search" id="search" class="search" placeholder="Search games" aria-label="Search games" autocomplete="off"><div class="search-suggest" id="searchSuggest"></div></div>
 <div class="tools"><button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
 <svg class="i-moon" width="21" height="21" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
 <svg class="i-sun" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
-</div></div>
-<nav class="cats" id="cats" aria-label="Categories"></nav></header>
+<a class="btn btn-dark" href="/admin.html">Admin</a></div></div>
+<nav class="nav-cats" id="cats" aria-label="Game categories"></nav>
+</header>
 <main class="main" id="main"><div class="grid" id="grid">
 <section class="player" id="player" hidden aria-label="Game player">
 <iframe id="frame" title="Game" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock allow-presentation allow-modals" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" allowfullscreen></iframe>
@@ -181,28 +195,34 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
 (()=>{
 'use strict';
 const CATEGORIES=["Action", "Adventure", "Arcade", "Puzzle", "Racing", "Sports", "Casual", "Strategy", "Other"], COLORS=['#6B4EFF','#FF5C6C','#1FB5A5','#F59E0B','#3B82F6','#EC4899'],SPAN={normal:1,big:2,huge:3};
-let games=[],query='',activeCat='All',current=null,cols=1,lastCols=0;
+let games=[],query='',activeCat='All',current=null,cols=1,lastCols=0,suggestIndex=-1;
 const $=id=>document.getElementById(id);
-const el=(tag,props={},...kids)=>{const n=document.createElement(tag);Object.entries(props).forEach(([k,v])=>{if(k==='class')n.className=v;else if(k.startsWith('on'))n.addEventListener(k.slice(2),v);else n.setAttribute(k,v)});kids.forEach(k=>n.append(k));return n};
+const el=(tag,props={},...kids)=>{const n=document.createElement(tag);Object.entries(props).forEach(([k,v])=>{if(k==='class')n.className=v;else if(k.startsWith('on'))n.addEventListener(k.slice(2),v);else n.setAttribute(k,v)});kids.forEach(k=>k&&n.append(k));return n};
 function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
+function fade(elm){elm.classList.remove('fade-swap');void elm.offsetWidth;elm.classList.add('fade-swap')}
 function applyCrop(img,c){if(!c)return;img.classList.add('crop');Object.assign(img.style,{width:100/c.w+'%',height:100/c.h+'%',left:-c.x/c.w*100+'%',top:-c.y/c.h*100+'%'})}
 function coverImg(g){const img=el('img',{class:'cover',src:g.cover,alt:'',loading:'lazy',referrerpolicy:'no-referrer'});applyCrop(img,g.crop);return img}
 function coverEl(g){const ph=()=>el('div',{class:'cover ph',style:'background:'+COLORS[g.name.length%COLORS.length]},(g.name[0]||'?').toUpperCase());const img=coverImg(g);img.addEventListener('error',()=>img.replaceWith(ph()));return img}
-function tile(g,normalOnly=false){const size=normalOnly?'normal':(g.size||'normal');const t=el('button',{class:'tile s'+Math.min(SPAN[size]||1,cols),title:g.name,'aria-label':'Play '+g.name,onclick:()=>openPlayer(g)},coverEl(g),el('span',{class:'tile-info'},el('span',{class:'tn'},g.name),el('span',{class:'tc'},g.category),el('span',{class:'tp'},'Play')));if(g.hot&&!normalOnly){const b=el('span',{class:'badge hot',title:'Hot'},'🔥');t.append(b)}return t}
-function chipBar(box,items,selected,pick){box.replaceChildren(...items.map(c=>el('button',{class:'chip'+(c===selected?' on':''),onclick:()=>pick(c)},c)))}
-function renderCats(){chipBar($('cats'),['All','Hot',...CATEGORIES],activeCat,c=>{activeCat=c;renderCats();renderGrid()})}
+function titleSize(name,base){const n=name.length;if(n>28)return Math.max(.58,base-.18);if(n>21)return Math.max(.62,base-.12);if(n>15)return Math.max(.68,base-.06);return base}
+function tile(g,normalOnly=false){const size=normalOnly?'normal':(g.size||'normal');const t=el('button',{class:'tile s'+Math.min(SPAN[size]||1,cols),title:g.name,'aria-label':'Play '+g.name,onclick:()=>openPlayer(g)},coverEl(g),el('span',{class:'tile-info'},el('span',{class:'tn',style:'font-size:'+titleSize(g.name,normalOnly?.78:(size==='huge'?1.12:size==='big'?.95:.78))+'rem'},g.name)));if(g.hot&&!normalOnly){const b=el('span',{class:'badge hot',title:'Hot'},'🔥');t.append(b)}return t}
+function chipBar(box,items,selected,pick){box.replaceChildren(...items.map(c=>{const count=c==='All'?games.filter(g=>g.status!=='removed').length:c==='Hot'?games.filter(g=>g.status!=='removed'&&g.hot).length:games.filter(g=>g.status!=='removed'&&g.category===c).length;return el('button',{class:'chip'+(c===selected?' on':''),onclick:()=>pick(c)},c,el('span',{class:'count'},String(count)))}))}
+const CAT_ICONS={All:'⌂',Hot:'🔥',Action:'⚡',Adventure:'◈',Arcade:'◉',Puzzle:'✚',Racing:'↝',Sports:'◉',Casual:'●',Strategy:'♟',Other:'✦'};
+function renderCats(){const box=$('cats');const items=['All','Hot',...CATEGORIES];box.replaceChildren(...items.map(c=>{const count=c==='All'?games.filter(g=>g.status!=='removed').length:c==='Hot'?games.filter(g=>g.status!=='removed'&&g.hot).length:games.filter(g=>g.status!=='removed'&&g.category===c).length;return el('button',{class:c===activeCat?'on':'',title:c,onclick:()=>{activeCat=c;renderCats();fade($('grid'));renderGrid()}},el('span',{},c),el('span',{class:'count'},String(count))) }))}
 function fitGrid(){const main=$('main'),root=getComputedStyle(document.documentElement),ms=getComputedStyle(main),cell=parseFloat(root.getPropertyValue('--cell')),gap=parseFloat(root.getPropertyValue('--gap')),avail=main.clientWidth-parseFloat(ms.paddingLeft)-parseFloat(ms.paddingRight);cols=Math.max(1,Math.floor((avail+gap)/(cell+gap)));main.style.setProperty('--cols',cols);main.style.setProperty('--w',(cols*cell+(cols-1)*gap)+'px')}
-function layoutPlayer(){fitGrid();if(!current)return;$('player').style.removeProperty('grid-column');$('player').style.removeProperty('grid-row');}
+function layoutPlayer(){fitGrid();if(!current)return}
 function sizeWeight(g){return ({huge:1,big:2,normal:3}[g.size]||3)}
 function renderRecommendations(active){const box=$('recommendations');box.replaceChildren();if(!current){box.hidden=true;return}const rec=active.filter(g=>g.id!==current.id).sort((a,b)=>sizeWeight(a)-sizeWeight(b)||Number(b.hot)-Number(a.hot));if(!rec.length){box.hidden=true;return}box.hidden=false;box.append(el('div',{class:'recommendations-title'},'Recommended'));rec.forEach(g=>box.append(tile(g,true)))}
-function renderGrid(){const grid=$('grid'),empty=$('empty'),active=games.filter(g=>g.status!=='removed'),list=active.filter(g=>(activeCat==='All'||(activeCat==='Hot'?g.hot:g.category===activeCat))&&g.name.toLowerCase().includes(query)).sort((a,b)=>sizeWeight(a)-sizeWeight(b)||Number(b.hot)-Number(a.hot));[...grid.children].forEach(c=>{if(c.id!=='player'&&c.id!=='recommendations')c.remove()});if(!list.length){empty.hidden=false;empty.textContent=active.length?'No games found.':'No games available yet.';renderRecommendations(active);return}empty.hidden=true;list.filter(g=>!current||g.id!==current.id).forEach(g=>grid.append(tile(g,false)));renderRecommendations(active)}
-function openPlayer(g){current=g;$('playerTitle').textContent=g.name;$('playerCat').textContent=g.category;const pi=coverImg(g);pi.addEventListener('error',()=>pi.remove());$('playerIcon').replaceChildren(pi);$('frame').src=g.url;$('bgblur').style.backgroundImage='url('+JSON.stringify(g.cover)+')';document.body.classList.add('playing');$('player').hidden=false;layoutPlayer();renderGrid();window.scrollTo({top:0,behavior:'smooth'})}
-function closePlayer(){current=null;$('frame').src='about:blank';$('player').hidden=true;document.body.classList.remove('playing');$('recommendations').hidden=true;if(document.fullscreenElement)document.exitFullscreen();renderGrid()}
+function renderGrid(){const grid=$('grid'),empty=$('empty'),active=games.filter(g=>g.status!=='removed'),list=active.filter(g=>(activeCat==='All'||(activeCat==='Hot'?g.hot:g.category===activeCat))&&g.name.toLowerCase().includes(query)).sort((a,b)=>sizeWeight(a)-sizeWeight(b)||Number(b.hot)-Number(a.hot));[...grid.children].forEach(c=>{if(c.id!=='player'&&c.id!=='recommendations')c.remove()});if(!list.length){empty.hidden=false;empty.textContent=active.length?'No games found.':'No games available yet.';renderRecommendations(active);fade(empty);return}empty.hidden=true;list.filter(g=>!current||g.id!==current.id).forEach(g=>grid.append(tile(g,false)));renderRecommendations(active);fade(grid)}
+function openPlayer(g){current=g;$('playerTitle').textContent=g.name;$('playerCat').textContent=g.category;const pi=coverImg(g);pi.addEventListener('error',()=>pi.remove());$('playerIcon').replaceChildren(pi);$('frame').src=g.url;$('bgblur').style.backgroundImage='url('+JSON.stringify(g.cover)+')';document.body.classList.add('playing');$('player').hidden=false;layoutPlayer();renderGrid();fade($('player'));window.scrollTo({top:0,behavior:'smooth'})}
+function closePlayer(){current=null;$('frame').src='about:blank';$('player').hidden=true;document.body.classList.remove('playing');$('recommendations').hidden=true;renderGrid();if(document.fullscreenElement)document.exitFullscreen()}
+function renderSuggestions(){const box=$('searchSuggest');const q=query.trim();if(!q){box.classList.remove('show');box.replaceChildren();suggestIndex=-1;return}const matches=games.filter(g=>g.status!=='removed'&&g.name.toLowerCase().includes(q)).sort((a,b)=>Number(b.hot)-Number(a.hot)).slice(0,7);box.replaceChildren();suggestIndex=-1;if(!matches.length){box.classList.remove('show');return}matches.forEach((g,i)=>{const img=el('img',{class:'mini-cover',src:g.cover,alt:''});const b=el('button',{type:'button',onclick:()=>{ $('search').value=g.name;query=g.name.toLowerCase();box.classList.remove('show');const found=games.find(x=>x.id===g.id);if(found)openPlayer(found)}} ,img,el('span',{},g.name,el('small',{},g.category)));box.append(b)});box.classList.add('show')}
 $('closePlayer').onclick=closePlayer;
 $('fsBtn').onclick=()=>{const f=$('frame');if(document.fullscreenElement)document.exitFullscreen();else if(f.requestFullscreen)f.requestFullscreen().catch(()=>{})};
-$('search').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();renderGrid()});
-$('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('playbox_theme',t)}catch(e){}};
-async function loadGames(){try{const r=await fetch('/api/games',{cache:'no-store'});if(!r.ok)throw new Error();games=await r.json();renderGrid()}catch(e){games=[];renderGrid();toast('Could not load games')}}
+$('search').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();renderSuggestions();renderGrid()});
+$('search').addEventListener('keydown',e=>{const box=$('searchSuggest');const items=[...box.querySelectorAll('button')];if(e.key==='ArrowDown'&&items.length){e.preventDefault();suggestIndex=Math.min(suggestIndex+1,items.length-1);items.forEach((x,i)=>x.classList.toggle('active',i===suggestIndex))}else if(e.key==='ArrowUp'&&items.length){e.preventDefault();suggestIndex=Math.max(suggestIndex-1,0);items.forEach((x,i)=>x.classList.toggle('active',i===suggestIndex))}else if(e.key==='Enter'&&suggestIndex>=0&&items[suggestIndex])items[suggestIndex].click();else if(e.key==='Escape')box.classList.remove('show')});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))$('searchSuggest').classList.remove('show')});
+$('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('playbox_theme',t)}catch(e){};fade(document.body)};
+async function loadGames(){try{const r=await fetch('/api/games',{cache:'no-store'});if(!r.ok)throw new Error();games=await r.json();renderCats();renderGrid()}catch(e){games=[];renderGrid();toast('Could not load games')}}
 window.addEventListener('resize',()=>{layoutPlayer();if(cols!==lastCols){lastCols=cols;renderGrid()}});
 fitGrid();lastCols=cols;renderCats();renderGrid();loadGames();
 })();
