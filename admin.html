@@ -1,0 +1,233 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Playbox Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+  --page:#47E1C8; --surface:#fff; --ink:#14304A; --on-ink:#fff; --muted:#5B6E80;
+  --line:#DCE8EC; --field:#F1F7F9; --accent:#5B47F5; --sun:#FFD23F; --coral:#E8445A; --mint:#17A897; --admin-bg:#EDF4F6;
+  --shadow:0 4px 14px rgba(8,50,60,.22);
+  --pattern:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='700'%3E%3Cpolygon points='0,0 420,0 0,330' fill='%23fff' fill-opacity='.14'/%3E%3Cpolygon points='900,700 520,700 900,260' fill='%23fff' fill-opacity='.14'/%3E%3Cpolygon points='300,700 620,330 640,700' fill='%23000' fill-opacity='.05'/%3E%3C/svg%3E");
+  --cell:94px; --gap:16px;
+}
+:root[data-theme="dark"]{
+  --page:#0A1D2B; --surface:#12303F; --ink:#E8F4F7; --on-ink:#0A1D2B; --muted:#8FA8B5;
+  --line:#25475A; --field:#0D2433; --accent:#8F80FF; --coral:#FF6B7F; --mint:#2CC7B5; --admin-bg:#081824;
+  --shadow:0 4px 14px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--ink);line-height:1.5;min-height:100vh;background:var(--pattern) center/cover fixed no-repeat,var(--page)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* Header (not sticky) */
+.header{background:var(--surface);border-radius:0 0 22px 22px;box-shadow:var(--shadow);margin:0 12px}
+.header-top{display:flex;align-items:center;gap:16px;padding:12px 18px;max-width:1280px;margin:auto}
+.logo{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.7rem;color:var(--ink);text-decoration:none;letter-spacing:-.5px;user-select:none}
+.logo span{background:var(--sun);color:#14304A;padding:0 8px;border-radius:10px;margin-left:2px}
+.search{flex:1;max-width:520px;margin:0 auto;padding:10px 18px;border:2px solid transparent;border-radius:999px;background:var(--field);outline:none;width:100%}
+.search:focus{border-color:var(--accent)}
+.tools,.auth{display:flex;gap:8px;align-items:center}
+.icon-btn{width:42px;height:42px;border:0;border-radius:50%;background:var(--field);display:grid;place-items:center;flex:none}
+.icon-btn:hover{background:var(--line)}
+.i-sun{display:none}
+[data-theme="dark"] .i-sun{display:block}
+[data-theme="dark"] .i-moon{display:none}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:0 18px 12px;max-width:1280px;margin:auto;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;background:var(--field);padding:6px 16px;border-radius:999px;font-weight:700;font-size:.9rem}
+.chip:hover{background:var(--line)}
+.chip.on{background:var(--accent);color:#fff}
+
+/* Buttons */
+.btn{border:2px solid var(--line);border-radius:999px;padding:8px 18px;font-weight:700;background:var(--surface)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-dark{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.btn-ghost:hover{background:var(--field)}
+.btn-danger{border-color:var(--coral);color:var(--coral)}
+.btn-danger:hover{background:var(--coral);color:#fff}
+.btn-sm{padding:4px 12px;font-size:.85rem}
+.btn.on{background:var(--sun);border-color:var(--sun);color:#14304A}
+
+/* Mosaic */
+.main{max-width:1320px;margin:auto;padding:26px 16px 60px}
+.grid{width:var(--w,100%);margin-inline:auto}
+.grid{display:grid;grid-template-columns:repeat(var(--cols,auto-fill),var(--cell));grid-auto-rows:var(--cell);grid-auto-flow:dense;gap:var(--gap)}
+.tile{position:relative;border:0;padding:0;border-radius:18px;overflow:hidden;background:var(--line);box-shadow:var(--shadow);transition:transform .15s}
+.tile:hover,.tile:focus-visible{transform:scale(1.04);z-index:2}
+.s2{grid-column:span 2;grid-row:span 2}
+.s3{grid-column:span 3;grid-row:span 3}
+.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.cover.ph{display:grid;place-items:center;font-family:'Fredoka',sans-serif;font-size:2.4rem;font-weight:700;color:#fff}
+.tile-info{position:absolute;inset:auto 0 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:34px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff;opacity:0;transition:opacity .15s}
+.tile:hover .tile-info,.tile:focus-visible .tile-info{opacity:1}
+.tn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:.95rem;line-height:1.2;overflow-wrap:anywhere}
+.s3 .tn{font-size:1.4rem}
+.tc{font-size:.72rem;font-weight:700;background:var(--sun);color:#14304A;border-radius:999px;padding:0 8px}
+.tp{margin-top:3px;font-size:.78rem;font-weight:700;background:var(--mint);border-radius:999px;padding:1px 14px}
+.badge{position:absolute;top:6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.badge svg{width:15px;height:15px}
+.badge.hot{right:6px;background:var(--coral);color:#fff}
+.empty{text-align:center;font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:600;padding:90px 0}
+@media (hover:none){
+  .tile-info{opacity:1;padding-top:22px}
+  .s1 .tc,.s1 .tp{display:none}
+  .s1 .tn{font-size:.62rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+}
+
+/* Inline player */
+.player{position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#000;box-shadow:var(--shadow);min-width:0}
+.player iframe{flex:1;min-height:0;width:100%;border:0;background:#000}
+.player-bar{order:2;height:64px;flex:none;display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--surface);color:var(--ink)}
+.p-icon{position:relative;display:block;width:42px;height:42px;border-radius:10px;overflow:hidden;flex:none;background:var(--line)}
+.p-meta{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.p-meta strong{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-meta small{color:var(--muted);font-weight:600}
+.bgblur{position:fixed;inset:-60px;z-index:-1;display:none;background:center/cover no-repeat;filter:blur(40px) saturate(1.5) brightness(.65)}
+body.playing .bgblur{display:block}
+body.playing .empty{color:#fff}
+
+/* Modals & forms */
+.overlay{position:fixed;inset:0;background:rgba(10,29,43,.6);display:grid;place-items:center;padding:16px;z-index:60;overflow-y:auto}
+.modal{background:var(--surface);border-radius:22px;padding:26px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+h1,h2,h3{font-family:'Fredoka',sans-serif}
+h1{font-size:1.7rem}
+label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.9rem}
+input[type=text],input[type=password],input[type=url],select{padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--field);font-weight:400;width:100%}
+input:focus,select:focus{border-color:var(--accent);outline:none}
+.row{display:flex;gap:10px;justify-content:flex-end;align-items:center}
+.error{color:#B3203A;background:#FFE3E8;border-radius:10px;padding:8px 12px;font-size:.9rem;font-weight:600}
+
+/* Admin */
+.admin{position:fixed;inset:0;z-index:50;display:flex;background:var(--admin-bg)}
+.side{width:236px;flex:none;background:var(--surface);padding:20px 14px;display:flex;flex-direction:column;gap:20px;border-right:1px solid var(--line)}
+.side-brand{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.4rem;padding:0 8px}
+.side-brand span{background:var(--sun);color:#14304A;padding:0 6px;border-radius:8px}
+.side-brand small{font-size:.8rem;color:var(--muted);font-weight:600}
+.side-nav{display:flex;flex-direction:column;gap:4px}
+.side-nav button{display:flex;justify-content:space-between;align-items:center;gap:8px;border:0;background:none;padding:10px 14px;border-radius:12px;font-weight:700;text-align:left}
+.side-nav button:hover{background:var(--field)}
+.side-nav button.on{background:var(--accent);color:#fff}
+.side-nav i{font-style:normal;font-size:.75rem;background:var(--field);color:var(--ink);border-radius:999px;padding:0 8px}
+.side-nav .on i{background:rgba(255,255,255,.25);color:#fff}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.content{flex:1;min-width:0;overflow-y:auto;padding:0 28px 60px}
+.toolbar{position:sticky;top:0;z-index:2;background:var(--admin-bg);padding:22px 0 12px;display:flex;flex-direction:column;gap:12px}
+.toolbar .search{max-width:none;margin:0;background:var(--surface)}
+.toolbar .cats{padding:0;margin:0;max-width:none}
+.toolbar .chip{background:var(--surface)}
+.toolbar .chip.on{background:var(--accent)}
+.view{padding-top:22px;display:flex;flex-direction:column;gap:18px;max-width:900px}
+.toolbar:not([hidden]) ~ .view{padding-top:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{background:var(--surface);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.stat b{font-family:'Fredoka',sans-serif;font-size:2rem;display:block;line-height:1.1}
+.stat span{color:var(--muted);font-weight:700;font-size:.9rem}
+.card{background:var(--surface);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+.check{flex-direction:row;align-items:center;gap:10px;align-self:end;padding:10px 0}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+
+.count{background:var(--ink);color:var(--on-ink);border-radius:999px;font-size:.85rem;padding:1px 10px;margin-left:6px;vertical-align:middle;font-family:'Nunito',sans-serif}
+.list{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
+.list li{display:flex;gap:12px;align-items:center;padding:8px;border:2px solid var(--line);border-radius:14px}
+.list li.none{border:0}
+.list .sq{width:48px;height:48px}
+.list .info{flex:1;min-width:0}
+.list .info b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .info small{color:var(--muted)}
+.pill{background:var(--coral);color:#fff;border-radius:999px;font-size:.7rem;font-weight:700;padding:0 8px;margin-left:6px}
+.list .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.mini{width:auto;padding:4px 10px;border-radius:999px;font-size:.85rem;font-weight:700}
+.none{color:var(--muted);font-size:.95rem}
+
+.toast{display:flex;align-items:center;gap:14px;max-width:calc(100vw - 24px);position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:10px 20px;border-radius:999px;font-weight:700;z-index:200}
+
+@media (max-width:760px){
+  .admin{flex-direction:column}
+  .side{width:auto;flex-direction:row;align-items:center;gap:10px;padding:10px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .side-brand{display:none}
+  .side-nav{flex-direction:row}
+  .side-nav button{white-space:nowrap;padding:8px 12px}
+  .side-foot{margin:0 0 0 auto;flex-direction:row}
+  .content{padding:0 14px 50px}
+  .form-grid{grid-template-columns:1fr}
+  .list li{flex-wrap:wrap}
+  .list .acts{width:100%;justify-content:flex-start}
+}
+@media (max-width:640px){
+  :root{--cell:76px;--gap:10px}
+  .header{margin:0 6px}
+  .header-top{flex-wrap:wrap;padding:10px 12px;gap:10px}
+  .search{order:3;flex-basis:100%;max-width:none}
+  .tools{margin-left:auto}
+  .cats{padding:0 12px 10px}
+  .main{padding:18px 10px 50px}
+  .s3 .tn{font-size:1.1rem}
+  .player-bar{padding:0 10px;gap:8px}
+  .player-bar .btn{padding:6px 12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.modal.wide{max-width:560px}
+.view-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.toast button{background:var(--sun);color:#14304A;border:0;border-radius:999px;padding:2px 14px;font-weight:700}
+
+.cover.crop{inset:auto;max-width:none;object-fit:fill}
+.sq{position:relative;display:block;width:48px;height:48px;border-radius:10px;overflow:hidden;flex:none;background:var(--line)}
+.sq.preview{width:120px;height:120px;border-radius:16px}
+.crop-row{display:flex;gap:14px;align-items:center}
+.crop-row div{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.modal.crop-modal{max-width:480px}
+.stage{position:relative;width:100%;max-width:420px;aspect-ratio:1;margin:0 auto;overflow:hidden;border-radius:18px;background:var(--line);touch-action:none;cursor:grab}
+.stage:active{cursor:grabbing}
+.stage img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.stage::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.75)}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+
+
+.admin-page{min-height:100vh;padding:28px 16px 60px}.admin-wrap{max-width:980px;margin:auto}
+.admin-top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);padding:16px 20px;border-radius:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.admin-top .logo{font-size:1.5rem}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:var(--surface);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.check{flex-direction:row;align-items:center;gap:10px;align-self:end;padding:10px 0}.check input{width:20px;height:20px;accent-color:var(--accent)}
+.list{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}.list li{display:flex;gap:12px;align-items:center;padding:8px;border:2px solid var(--line);border-radius:14px}.list .info{flex:1;min-width:0}.list .info b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.list .info small{color:var(--muted)}.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.mini{width:auto;padding:4px 10px;border-radius:999px;font-size:.85rem;font-weight:700}.error{color:#B3203A;background:#FFE3E8;border-radius:10px;padding:8px 12px;font-size:.9rem;font-weight:600}
+@media(max-width:760px){.admin-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.admin-top{flex-wrap:wrap}}
+</style><script>try{var t=localStorage.getItem("playbox_theme");if(t==="dark")document.documentElement.dataset.theme="dark"}catch(e){}</script></head>
+<body><main class="admin-page"><div class="admin-wrap">
+<header class="admin-top"><a class="logo" href="/">play<span>box</span></a><div class="row"><a class="btn" href="/">View site</a><button class="btn btn-danger" id="logout">Logout</button></div></header>
+<section id="loginCard" class="card" style="max-width:440px;margin:50px auto"><h1>Admin Login</h1><p class="none">This page controls the games shown on the public website.</p>
+<form id="loginForm"><label>Username<input id="loginUser" type="text" required autocomplete="username"></label><label>Password<input id="loginPass" type="password" required autocomplete="current-password"></label><p class="error" id="loginError" hidden></p><button class="btn btn-primary" type="submit">Login</button></form></section>
+<section id="dashboard" hidden><div class="admin-grid">
+<form class="card" id="gameForm"><h1 id="formTitle">Add Game</h1><div class="form-grid">
+<label>Game Name<input id="name" required></label><label>Category<select id="category" required></select></label>
+<label class="full">Cover Image URL<input id="cover" type="url" placeholder="https://..." required></label>
+<label class="full">Game / Iframe URL<input id="url" type="url" placeholder="https://..." required></label>
+<label>Tile size<select id="size"><option value="normal">Normal</option><option value="big">Big</option><option value="huge">Extra big</option></select></label>
+<label class="check"><input id="hot" type="checkbox"> Mark as Hot</label></div><p class="error" id="formError" hidden></p>
+<div class="row"><button class="btn" type="button" id="cancelEdit" hidden>Cancel edit</button><button class="btn btn-primary" type="submit" id="saveBtn">Publish Game</button></div></form>
+<div class="card"><h2>Publishing</h2><p class="none">Games are stored in the shared database. No redeploy is required after publishing. Every visitor can see the game on the public site.</p>
+<p class="none">The game URL must allow iframe embedding. Some sites block embedding with security headers.</p><a class="btn btn-dark" href="/">Open Public Website</a></div></div>
+<div class="card" style="margin-top:18px"><div class="view-head"><h2>Published Games <span class="count" id="count">0</span></h2><button class="btn btn-danger btn-sm" id="refresh">Refresh</button></div><ul class="list" id="list"></ul></div></section>
+</div></main><div class="toast" id="toast" hidden></div>
+<script>
+const CATEGORIES=["Action", "Adventure", "Arcade", "Puzzle", "Racing", "Sports", "Casual", "Strategy", "Other"];let editing=null,games=[];
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2500)}
+function showLogin(){$('loginCard').hidden=false;$('dashboard').hidden=true}function showDash(){$('loginCard').hidden=true;$('dashboard').hidden=false;loadGames()}
+function fillCats(){$('category').replaceChildren(...CATEGORIES.map(c=>new Option(c,c)))}
+async function api(url,options={}){const r=await fetch(url,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});let data={};try{data=await r.json()}catch{}if(!r.ok)throw new Error(data.error||'Request failed');return data}
+$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginError').hidden=true;try{await api('/api/admin/login',{method:'POST',body:JSON.stringify({username:$('loginUser').value,password:$('loginPass').value})});showDash()}catch(err){$('loginError').textContent=err.message;$('loginError').hidden=false}};
+$('logout').onclick=async()=>{try{await api('/api/admin/logout',{method:'POST'})}catch{}showLogin()};
+function resetForm(){editing=null;$('gameForm').reset();$('formTitle').textContent='Add Game';$('saveBtn').textContent='Publish Game';$('cancelEdit').hidden=true}$('cancelEdit').onclick=resetForm;
+$('gameForm').onsubmit=async e=>{e.preventDefault();$('formError').hidden=true;const payload={name:$('name').value.trim(),category:$('category').value,cover:$('cover').value.trim(),url:$('url').value.trim(),size:$('size').value,hot:$('hot').checked};try{if(editing)await api('/api/games',{method:'PATCH',body:JSON.stringify({id:editing.id,...payload})});else await api('/api/games',{method:'POST',body:JSON.stringify(payload)});toast(editing?'Game updated':'Game published live');resetForm();loadGames()}catch(err){$('formError').textContent=err.message;$('formError').hidden=false}};
+async function loadGames(){try{games=await api('/api/games?admin=1');render()}catch(err){if(err.message==='Unauthorized')return showLogin();toast(err.message)}}
+function render(){$('count').textContent=games.length;$('list').replaceChildren();if(!games.length){$('list').append(Object.assign(document.createElement('li'),{className:'none',textContent:'No games published yet.'}));return}games.forEach(g=>{const li=document.createElement('li'),img=document.createElement('img');img.src=g.cover;img.className='sq';img.alt='';const info=document.createElement('div');info.className='info';info.innerHTML='<b></b><small></small>';info.firstChild.textContent=g.name;info.lastChild.textContent=g.category+(g.hot?' • Hot':'');const acts=document.createElement('div');acts.className='acts';const edit=document.createElement('button');edit.className='btn btn-sm';edit.textContent='Edit';edit.onclick=()=>editGame(g);const del=document.createElement('button');del.className='btn btn-sm btn-danger';del.textContent='Delete';del.onclick=()=>deleteGame(g);acts.append(edit,del);li.append(img,info,acts);$('list').append(li)})}
+function editGame(g){editing=g;$('formTitle').textContent='Edit Game';$('saveBtn').textContent='Save Changes';$('cancelEdit').hidden=false;$('name').value=g.name;$('category').value=g.category;$('cover').value=g.cover;$('url').value=g.url;$('size').value=g.size;$('hot').checked=!!g.hot;window.scrollTo({top:0,behavior:'smooth'})}
+async function deleteGame(g){if(!confirm('Delete "'+g.name+'"?'))return;try{await api('/api/games',{method:'DELETE',body:JSON.stringify({id:g.id})});toast('Game deleted');loadGames()}catch(err){toast(err.message)}}
+$('refresh').onclick=loadGames;fillCats();api('/api/admin/me').then(showDash).catch(showLogin);
+</script></body></html>
