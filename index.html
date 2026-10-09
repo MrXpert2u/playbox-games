@@ -63,7 +63,7 @@ button{cursor:pointer}
 .btn.on{background:var(--sun);border-color:var(--sun);color:#14304A}
 
 /* Mosaic */
-.main{max-width:1320px;margin:auto;padding:26px 16px 60px}
+.main{width:auto;max-width:none;margin:0 12px;padding:26px 18px 60px}
 .grid{width:var(--w,100%);margin-inline:auto}
 .grid{display:grid;grid-template-columns:repeat(var(--cols,auto-fill),var(--cell));grid-auto-rows:var(--cell);grid-auto-flow:dense;gap:var(--gap)}
 .grid.is-playing{display:grid;grid-template-columns:minmax(0,2.35fr) minmax(250px,1fr);grid-auto-rows:auto;grid-auto-flow:row;gap:16px;width:100%!important}
@@ -159,7 +159,7 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
   .search{order:3;flex-basis:100%;max-width:none}
   .tools{margin-left:auto}
   .cats{padding:0 12px 10px}
-  .main{padding:18px 10px 50px}
+  .main{margin:0 6px;padding:18px 12px 50px}
   .grid.is-playing{grid-template-columns:1fr}
   .grid.is-playing .player{grid-column:1;grid-row:1;min-height:420px;height:70vh}
   .grid.is-playing .recommendations{grid-column:1;grid-row:2}
