@@ -69,7 +69,9 @@ button{cursor:pointer}
 .rec-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .rec-card{position:relative;border:0;padding:0;width:100%;aspect-ratio:1/1;border-radius:16px;overflow:hidden;background:var(--line);box-shadow:var(--shadow);cursor:pointer}
 .rec-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.rec-card .rec-name{position:absolute;left:0;right:0;bottom:0;padding:28px 8px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;line-height:1.12;text-align:left;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+.rec-card .rec-name{position:absolute;left:0;right:0;bottom:0;padding:28px 8px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;line-height:1.12;text-align:left;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;opacity:0;visibility:hidden;transition:opacity .18s ease,visibility .18s ease;pointer-events:none}
+.rec-card:hover .rec-name,.rec-card:focus-visible .rec-name{opacity:1;visibility:visible}
+.rec-card:hover,.rec-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .rec-card .rec-name.small{font-size:.72rem}
 .rec-card .rec-name.medium{font-size:.82rem}
 .rec-card .rec-name.large{font-size:.94rem}
