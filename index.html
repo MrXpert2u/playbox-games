@@ -36,6 +36,11 @@ button{cursor:pointer}
 .tools,.auth{display:flex;gap:8px;align-items:center}
 .icon-btn{width:42px;height:42px;border:0;border-radius:50%;background:var(--field);display:grid;place-items:center;flex:none}
 .icon-btn:hover{background:var(--line)}
+.icon-btn.star-active{background:var(--sun);color:#14304A}
+.saving-overlay{position:fixed;inset:0;z-index:200;background:rgba(5,18,28,.72);display:grid;place-items:center;padding:18px}
+.saving-card{background:var(--surface);color:var(--ink);border-radius:20px;padding:24px 30px;min-width:220px;text-align:center;box-shadow:var(--shadow);font-weight:800}
+.saving-spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 12px;animation:saveSpin .7s linear infinite}
+@keyframes saveSpin{to{transform:rotate(360deg)}}
 .i-sun{display:none}
 [data-theme="dark"] .i-sun{display:block}
 [data-theme="dark"] .i-moon{display:none}
@@ -183,7 +188,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
 <input type="search" id="search" class="search" placeholder="Search games" aria-label="Search games" autocomplete="off">
 <div class="suggestions" id="suggestions"></div>
 </div>
-<div class="tools"><button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
+<div class="tools"><button class="icon-btn" id="favoritesBtn" aria-label="Show favorites" title="Show favorites"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3z"/></svg></button><button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
 <svg class="i-moon" width="21" height="21" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
 <svg class="i-sun" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
 </div></div>
@@ -192,14 +197,18 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
 <section class="player" id="player" hidden aria-label="Game player">
 <iframe id="frame" title="Game" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock allow-presentation allow-modals" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" allowfullscreen></iframe>
 <div class="player-bar"><span id="playerIcon" class="p-icon"></span><div class="p-meta"><strong id="playerTitle"></strong><small id="playerCat"></small></div>
-<div class="row"><button class="icon-btn" id="fsBtn" aria-label="Fullscreen" title="Fullscreen">⛶</button><button class="btn btn-primary" id="closePlayer">Close</button></div></div></section>
+<div class="row"><button class="icon-btn" id="fsBtn" aria-label="Fullscreen" title="Fullscreen">⛶</button><button class="icon-btn" id="playerFavBtn" aria-label="Add to favorites" title="Add to favorites"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3z"/></svg></button><button class="btn btn-primary" id="closePlayer">Close</button></div></div></section>
 </div><p class="empty" id="empty" hidden></p></main>
-<div class="toast" id="toast" role="status" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div><div class="saving-overlay" id="savingOverlay" hidden><div class="saving-card"><div class="saving-spinner"></div><div>Saving your data…</div><small style="display:block;margin-top:5px;color:var(--muted)">Please wait a moment</small></div></div>
 <script>
 (()=>{
 'use strict';
 const CATEGORIES=["Action", "Adventure", "Arcade", "Puzzle", "Racing", "Sports", "Casual", "Strategy", "Other"], COLORS=['#6B4EFF','#FF5C6C','#1FB5A5','#F59E0B','#3B82F6','#EC4899'],SPAN={normal:1,big:2,huge:3};
-let games=[],query='',activeCat='All',current=null,cols=1,lastCols=0;
+let games=[],query='',activeCat='All',current=null,cols=1,lastCols=0,favoritesView=false,favorites=new Set();
+try{favorites=new Set(JSON.parse(localStorage.getItem('playbox_favorites')||'[]'))}catch(e){}
+function savePlayboxState(){try{localStorage.setItem('playbox_favorites',JSON.stringify([...favorites]));localStorage.setItem('playbox_state',JSON.stringify({query,activeCat,favoritesView,currentGameId:current?.id||null,savedAt:Date.now()}))}catch(e){}}
+function gameKey(g){return String(g?.id??g?.url??g?.name??'')}
+function syncFavoriteButtons(){const on=!!current&&favorites.has(gameKey(current));$('playerFavBtn').classList.toggle('star-active',on);$('playerFavBtn').title=on?'Remove from favorites':'Add to favorites';$('playerFavBtn').setAttribute('aria-label',$('playerFavBtn').title);$('favoritesBtn').classList.toggle('star-active',favoritesView);$('favoritesBtn').title=favoritesView?'Show all games':'Show favorites';}
 const $=id=>document.getElementById(id);
 const el=(tag,props={},...kids)=>{const n=document.createElement(tag);Object.entries(props).forEach(([k,v])=>{if(k==='class')n.className=v;else if(k.startsWith('on'))n.addEventListener(k.slice(2),v);else n.setAttribute(k,v)});kids.forEach(k=>n.append(k));return n};
 function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
@@ -217,7 +226,8 @@ function layoutPlayer(){fitGrid()}
 function sorted(list){return [...list].sort((a,b)=>{const sw={huge:0,big:1,normal:2};const d=(sw[a.size]??2)-(sw[b.size]??2);return d||((b.hot?1:0)-(a.hot?1:0))})}
 function renderGrid(){
  const grid=$('grid'),empty=$('empty'),active=games.filter(g=>g.status!=='removed');
- let list=sorted(active.filter(g=>(activeCat==='All'||(activeCat==='Hot'?g.hot:g.category===activeCat))&&g.name.toLowerCase().includes(query)));
+ let list=sorted(active.filter(g=>(!favoritesView||favorites.has(gameKey(g)))&&(activeCat==='All'||(activeCat==='Hot'?g.hot:g.category===activeCat))&&g.name.toLowerCase().includes(query)));
+ if(favoritesView&&!list.length){empty.hidden=false;empty.textContent='No favorite games yet. Open a game and tap the ★ button to save it.';[...grid.children].forEach(c=>{if(c.id!=='player'&&c.id!=='recommendations')c.remove()});const oldRec=$('recommendations');if(oldRec)oldRec.remove();if(current){grid.classList.remove('is-playing');$('player').hidden=true;current=null;$('frame').src='about:blank';document.body.classList.remove('playing')}return;}
  [...grid.children].forEach(c=>{if(c.id!=='player'&&c.id!=='recommendations')c.remove()});
  const oldRec=$('recommendations');if(oldRec)oldRec.remove();
  if(current){
@@ -257,17 +267,20 @@ function renderGrid(){
  empty.hidden=true;list.forEach(g=>grid.append(tile(g)));
 }
 function openPlayer(g){
- current=g;$('playerTitle').textContent=g.name;$('playerCat').textContent=g.category;
+ current=g;syncFavoriteButtons();savePlayboxState();$('playerTitle').textContent=g.name;$('playerCat').textContent=g.category;
  const pi=coverImg(g);pi.addEventListener('error',()=>pi.remove());$('playerIcon').replaceChildren(pi);
  $('frame').src=g.url;$('bgblur').style.backgroundImage='url('+JSON.stringify(g.cover)+')';
  document.body.classList.add('playing');$('player').hidden=false;fade(renderGrid);window.scrollTo({top:0,behavior:'smooth'})
 }
 function closePlayer(animate=true){
- current=null;$('frame').src='about:blank';$('player').hidden=true;document.body.classList.remove('playing');
+ current=null;syncFavoriteButtons();savePlayboxState();$('frame').src='about:blank';$('player').hidden=true;document.body.classList.remove('playing');
  if(document.fullscreenElement)document.exitFullscreen();
  if(animate)fade(renderGrid);else renderGrid();
 }
-$('closePlayer').onclick=()=>closePlayer();
+function toggleFavorite(g){if(!g)return;const k=gameKey(g);if(favorites.has(k)){favorites.delete(k);toast('Removed from favorites')}else{favorites.add(k);toast('Added to favorites')}savePlayboxState();syncFavoriteButtons();if(favoritesView)fade(renderGrid)}
+$('playerFavBtn').onclick=()=>toggleFavorite(current);
+$('favoritesBtn').onclick=()=>{favoritesView=!favoritesView;$('search').value='';query='';if(current)closePlayer(false);syncFavoriteButtons();savePlayboxState();fade(renderGrid);window.scrollTo({top:0,behavior:'smooth'});if(favoritesView)toast('Showing favorite games');};
+$('closePlayer').onclick=()=>{if(!current){closePlayer();return}savePlayboxState();const overlay=$('savingOverlay');overlay.hidden=false;setTimeout(()=>{overlay.hidden=true;closePlayer()},1200)};
 $('fsBtn').onclick=()=>{const f=$('frame');if(document.fullscreenElement)document.exitFullscreen();else if(f.requestFullscreen)f.requestFullscreen().catch(()=>{})};
 
 function showSuggestions(){
@@ -295,9 +308,10 @@ $('search').addEventListener('keydown',e=>{
 });
 document.addEventListener('click',e=>{if(!$('search').contains(e.target)&&!$('suggestions').contains(e.target))$('suggestions').classList.remove('show')});
 $('logo').onclick=e=>{e.preventDefault();$('search').value='';query='';activeCat='All';renderCats();if(current)closePlayer(false);fade(renderGrid);window.scrollTo({top:0,behavior:'smooth'})};
-$('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('playbox_theme',t)}catch(e){}};
+$('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('playbox_theme',t)}catch(e){}savePlayboxState()};
+window.addEventListener('pagehide',savePlayboxState);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')savePlayboxState()});
 async function loadGames(){try{const r=await fetch('/api/games',{cache:'no-store'});if(!r.ok)throw new Error();games=await r.json();renderGrid()}catch(e){games=[];renderGrid();toast('Could not load games')}}
 window.addEventListener('resize',()=>{layoutPlayer();if(cols!==lastCols){lastCols=cols;renderGrid()}});
-fitGrid();lastCols=cols;renderCats();renderGrid();loadGames();
+fitGrid();lastCols=cols;renderCats();syncFavoriteButtons();renderGrid();loadGames();
 })();
 </script></body></html>
