@@ -306,12 +306,41 @@ function openForm(g){
 function closeForm(){$('formModal').hidden=true;editing=null}
 $('addBtn').onclick=()=>openForm();$('closeForm').onclick=closeForm;$('cancelEdit').onclick=closeForm;
 
-/* pasting a link opens the image editor */
+/* pasting a link opens the image editor; keep the existing UI unchanged */
+function normalizeCoverUrl(value){
+  try{
+    const u=new URL(value);
+    // Google Drive share links -> direct file endpoint
+    if(/(^|\.)drive\.google\.com$/i.test(u.hostname)){
+      let id=u.searchParams.get('id');
+      if(!id){const m=u.pathname.match(/\/file\/d\/([^/]+)/);if(m)id=m[1]}
+      if(id)return 'https://drive.google.com/uc?export=view&id='+encodeURIComponent(id);
+    }
+    // Dropbox share links -> raw image response
+    if(/(^|\.)dropbox\.com$/i.test(u.hostname)){
+      u.searchParams.delete('dl');u.searchParams.set('raw','1');return u.href;
+    }
+    // GitHub file view -> raw file URL
+    if(u.hostname.toLowerCase()==='github.com'){
+      const m=u.pathname.match(/^\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/);
+      if(m)return 'https://raw.githubusercontent.com/'+m[1]+'/'+m[2]+'/'+m[3]+'/'+m[4];
+    }
+    return u.href;
+  }catch{return value}
+}
 function loadImage(url){return new Promise((res,rej)=>{
-  const a=new Image();a.crossOrigin='anonymous';
-  a.onload=()=>res({img:a,cors:true});
-  a.onerror=()=>{const b=new Image();b.onload=()=>res({img:b,cors:false});b.onerror=()=>rej(new Error('load'));b.src=url};
-  a.src=url})}
+  const direct=normalizeCoverUrl(url);
+  const candidates=[...new Set([direct,url])];let index=0;
+  function attempt(){
+    if(index>=candidates.length)return rej(new Error('load'));
+    const src=candidates[index++];
+    const a=new Image();a.crossOrigin='anonymous';
+    a.onload=()=>res({img:a,cors:true,src});
+    a.onerror=()=>{const b=new Image();b.onload=()=>res({img:b,cors:false,src});b.onerror=attempt;b.src=src};
+    a.src=src;
+  }
+  attempt();
+})}
 async function onCover(){
   const v=$('cover').value.trim();if(v===lastUrl)return;lastUrl=v;coverFinal='';coverMode='';origImg=null;setPreview('');$('adjust').hidden=true;
   if(!v){resetCover();return}
@@ -319,8 +348,8 @@ async function onCover(){
   setHint('Loading image…');
   try{const r=await loadImage(v);
     if(r.cors){origImg=r.img;$('adjust').hidden=false;setHint('Pick the square area to use as the cover.');openCropper(r.img)}
-    else{coverFinal=v;coverMode='raw';setPreview(v);setHint('This image host blocks editing, so the link is used as-is and the site centers it in a square. Use an image from another host to choose the area.',true)}}
-  catch{setHint('Couldn’t load that image. Check the link and try again.',true)}}
+    else{coverFinal=r.src;coverMode='raw';setPreview(r.src);$('adjust').hidden=false;setHint('Image link loaded. This host does not allow cropping, so the original image will be used. You can still publish it.',true)}}
+  catch{setHint('Couldn’t load this link as an image. Try a direct image URL or a public image link.',true)}}
 $('cover').addEventListener('paste',()=>setTimeout(onCover,0));
 $('cover').addEventListener('change',onCover);
 $('adjust').onclick=async()=>{
