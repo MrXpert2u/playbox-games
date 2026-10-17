@@ -155,19 +155,16 @@ input:focus,select:focus{border-color:var(--accent);outline:none}
 @media (max-width:640px){
   :root{--cell:76px;--gap:10px}
   .header{margin:0 6px}
-  .header-top{display:flex;flex-wrap:wrap;align-items:center;padding:10px 12px;gap:10px}
-  .header-top > .logo{order:1;flex:0 0 auto}
-  .header-top > .tools{order:2;margin-left:auto;flex:0 0 auto}
-  .header-top > .search-wrap{order:3;display:block;flex:0 0 100%;width:100%;max-width:none;margin:0}
-  .header-top > .search-wrap .search{display:block;width:100%;max-width:none;margin:0;border-radius:14px}
+  .header-top{flex-wrap:wrap;padding:10px 12px;gap:10px}
+  .search{order:3;flex-basis:100%;max-width:none}
+  .tools{margin-left:auto}
   .cats{padding:0 12px 10px}
   .main{margin:0 6px;padding:18px 0 50px}
-  .grid.is-playing{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important;grid-auto-rows:auto!important;width:100%!important;gap:14px!important}
-  .grid.is-playing > .player{grid-column:1/-1!important;grid-row:1!important;width:100%!important;min-width:0!important;min-height:420px;height:70vh}
-  .grid.is-playing > .recommendations{grid-column:1/-1!important;grid-row:2!important;width:100%!important;min-width:0!important;align-self:start}
-  .grid.is-playing > .recommendations.more-recommendations{grid-column:1/-1!important;grid-row:3!important;width:100%!important;min-width:0!important}
-  .grid.is-playing > .recommendations .rec-grid{width:100%!important;max-width:none!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
-  .grid.is-playing > .recommendations.more-recommendations .rec-grid{width:100%!important;max-width:none!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .grid.is-playing{grid-template-columns:1fr}
+  .grid.is-playing .player{grid-column:1;grid-row:1;min-height:420px;height:70vh}
+  .grid.is-playing .recommendations{grid-column:1;grid-row:2}
+  .grid.is-playing .recommendations.more-recommendations{grid-column:1;grid-row:3}
+  .grid.is-playing .recommendations.more-recommendations .rec-grid{width:100%}
   .s3 .tn{font-size:1.05rem}
   .player-bar{padding:0 10px;gap:8px}
   .player-bar .btn{padding:6px 12px}
@@ -311,6 +308,21 @@ body:not(.playing)::after{
 @keyframes loaderFloat{from{border-radius:44% 56% 64% 36% / 42% 42% 58% 58%;transform:rotate(-8deg) scale(.96)}to{border-radius:60% 40% 38% 62% / 50% 60% 40% 50%;transform:rotate(12deg) scale(1.05)}}
 @media(prefers-reduced-motion:reduce){.startup-loader *,.startup-loader::before,.startup-loader::after{animation:none!important}.startup-loader{transition:none}}
 
+
+/* Final mobile layout overrides: keep the search wrapper, not just its input, on its own row. */
+@media (max-width: 800px), (hover: none) and (max-width: 1024px) {
+  .header-top { display:flex !important; flex-wrap:wrap !important; align-items:center !important; }
+  .header-top > .logo { order:1 !important; flex:0 0 auto !important; }
+  .header-top > .tools { order:2 !important; flex:0 0 auto !important; margin-left:auto !important; }
+  .header-top > .search-wrap { order:3 !important; display:block !important; flex:0 0 100% !important; width:100% !important; max-width:none !important; min-width:0 !important; margin:0 !important; }
+  .header-top > .search-wrap > .search { display:block !important; width:100% !important; max-width:none !important; margin:0 !important; border-radius:14px !important; }
+  .grid.is-playing { display:grid !important; grid-template-columns:minmax(0,1fr) !important; grid-auto-flow:row !important; grid-auto-rows:auto !important; width:100% !important; gap:14px !important; }
+  .grid.is-playing > .player { grid-column:1 !important; grid-row:1 !important; width:100% !important; min-width:0 !important; min-height:360px !important; height:65vh !important; }
+  .grid.is-playing > .recommendations { grid-column:1 !important; grid-row:2 !important; width:100% !important; min-width:0 !important; }
+  .grid.is-playing > .recommendations.more-recommendations { grid-column:1 !important; grid-row:3 !important; width:100% !important; min-width:0 !important; }
+  .grid.is-playing > .recommendations .rec-grid { width:100% !important; max-width:none !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+  .grid.is-playing > .recommendations.more-recommendations h2 { display:none !important; }
+}
 </style></head>
 <body>
 <div class="startup-loader" id="startupLoader" role="status" aria-live="polite" aria-label="Loading Playbox games">
